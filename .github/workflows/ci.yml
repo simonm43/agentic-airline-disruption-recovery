@@ -1,0 +1,95 @@
+name: ci
+
+# Session branches are verified locally; CI runs on main and on demand to save
+# Windows runner minutes. Documentation pushes still run: tests/docs reads docs/.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    runs-on: windows-latest
+    timeout-minutes: 75
+    env:
+      PYTHONIOENCODING: utf-8
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+
+      - name: Create the locked environment
+        run: |
+          python -m venv .venv
+          .\.venv\Scripts\python.exe -m pip install --require-hashes -r requirements.lock
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          .\.venv\Scripts\python.exe -m pip install -e . --no-deps
+
+      # requirements.lock predates these app dependencies; the images install them hash-locked
+      # for Linux CPython 3.13 (src\airline_systems\requirements.txt, src\testbench\requirements.txt).
+      - name: Add the app dependencies missing from the lock
+        run: .\.venv\Scripts\python.exe -m pip install azure-servicebus==7.15.0 mcp==2.3.0
+
+      # The runner's Azure CLI uses its own config directory, so download the
+      # release asset to a known path and check its SHA-256 instead.
+      - name: Install Bicep CLI 0.46.1
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $directory = Join-Path $env:RUNNER_TEMP 'bicep'
+          New-Item -ItemType Directory -Force $directory | Out-Null
+          $compiler = Join-Path $directory 'bicep.exe'
+          Invoke-WebRequest -UseBasicParsing -OutFile $compiler `
+              -Uri 'https://github.com/Azure/bicep/releases/download/v0.46.1/bicep-win-x64.exe'
+          $expected = '441D3D6094513ACAA8A9BE0B96B754D174BC0C19064C7BE04E35B87E67B66250'
+          if ((Get-FileHash $compiler -Algorithm SHA256).Hash -ne $expected) {
+              throw 'The Bicep CLI download does not match the pinned SHA-256.'
+          }
+          "BICEP_COMPILER=$compiler" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Build the offline infrastructure contract
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $compiler = $env:BICEP_COMPILER
+          if ((& $compiler --version) -notmatch '^Bicep CLI version 0\.46\.1\b') {
+              throw 'Offline contract checks require Bicep CLI 0.46.1.'
+          }
+          $env:AIRREC_DEV_OBJECT_ID = '00000000-0000-0000-0000-000000000001'
+          $env:AIRREC_DEV_UPN = 'offline-contract@example.invalid'
+          $env:AIRREC_DEV_BUDGET_EMAIL = 'offline-contract@example.invalid'
+          $env:AIRREC_DEV_BUDGET_START_DATE = '2026-10-01'
+          New-Item -ItemType Directory -Force .local\infra-contract | Out-Null
+          & $compiler build infra\main.bicep --no-restore --outfile .local\infra-contract\main.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & $compiler build infra\devnet-peering.bicep --no-restore --outfile .local\infra-contract\devnet-peering.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          foreach ($name in 'main', 'tools', 'worker', 'servicebus', 'prerequisites') {
+              & $compiler build "infra\ops-app\$name.bicep" --no-restore --outfile ".local\infra-contract\ops-app-$name.json"
+              if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          & $compiler build-params infra\dev.bicepparam --no-restore --outfile .local\infra-contract\dev.parameters.json
+          exit $LASTEXITCODE
+
+      - name: Ruff check
+        run: .\.venv\Scripts\python.exe -m ruff check src tests tools
+
+      - name: Ruff format check
+        run: .\.venv\Scripts\python.exe -m ruff format --check src tests tools
+
+      # As in the app images: strict, with stubless packages such as pyodbc ignored.
+      - name: Mypy (apps)
+        run: .\.venv\Scripts\python.exe -m mypy --strict --ignore-missing-imports src\airline_systems src\ops_app src\testbench
+
+      - name: Pytest
+        run: .\.venv\Scripts\python.exe -m pytest -q --durations=25

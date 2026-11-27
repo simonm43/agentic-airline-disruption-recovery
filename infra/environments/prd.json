@@ -1,0 +1,41 @@
+{
+  "name": "prd",
+  "label": "Prd",
+  "subscriptionId": "00000000-0000-4000-8000-000000000005",
+  "tenantId": "00000000-0000-4000-8000-000000000008",
+  "location": "swedencentral",
+  "regionCode": "swc",
+  "tags": {
+    "owner": "simonm43",
+    "costCenter": "arrow"
+  },
+  "network": {
+    "addressPrefix": "10.61.0.0/24",
+    "privateEndpointSubnetPrefix": "10.61.0.0/27",
+    "acaSubnetPrefix": "10.61.0.64/26"
+  },
+  "developerVnetId": "",
+  "sqlAdministrator": "identity",
+  "budgetUsd": 600,
+  "logDailyCapGb": 2,
+  "models": [
+    {"name": "gpt-4.1-eval", "model": "gpt-4.1", "version": "2025-04-14", "capacity": 500, "quota": "OpenAI.Standard.gpt4.1"},
+    {"name": "gpt-4.1-mini", "model": "gpt-4.1-mini", "version": "2025-04-14", "capacity": 600, "quota": "OpenAI.Standard.gpt4.1-mini"}
+  ],
+  "operators": [
+    "00000000-0000-4000-8000-000000000010",
+    "00000000-0000-4000-8000-000000000014"
+  ],
+  "testbenchOwners": [
+    "00000000-0000-4000-8000-000000000010"
+  ],
+  "apps": {
+    "arrow": "",
+    "systems": ""
+  },
+  "policyAssignments": [
+    "DataProtectionSecurityCenter",
+    "SqlVmAndArcSqlServersProtection",
+    "OpenSourceRelationalDatabasesProtectionSecurityCenter"
+  ]
+}

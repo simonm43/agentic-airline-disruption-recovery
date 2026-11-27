@@ -1,0 +1,41 @@
+{
+  "name": "dev",
+  "label": "Dev",
+  "subscriptionId": "00000000-0000-4000-8000-000000000013",
+  "tenantId": "00000000-0000-4000-8000-000000000008",
+  "location": "swedencentral",
+  "regionCode": "swc",
+  "tags": {
+    "owner": "simonm43",
+    "costCenter": "arrow"
+  },
+  "network": {
+    "addressPrefix": "10.60.0.0/24",
+    "privateEndpointSubnetPrefix": "10.60.0.0/27",
+    "acaSubnetPrefix": "10.60.0.64/26"
+  },
+  "developerVnetId": "/subscriptions/00000000-0000-4000-8000-000000000002/resourceGroups/developer-rg/providers/Microsoft.Network/virtualNetworks/developer-vnet",
+  "sqlAdministrator": "developer",
+  "budgetUsd": 900,
+  "logDailyCapGb": 1,
+  "models": [
+    {"name": "gpt-4.1-eval", "model": "gpt-4.1", "version": "2025-04-14", "capacity": 500, "quota": "OpenAI.Standard.gpt4.1"},
+    {"name": "gpt-4.1-mini", "model": "gpt-4.1-mini", "version": "2025-04-14", "capacity": 600, "quota": "OpenAI.Standard.gpt4.1-mini"}
+  ],
+  "operators": [
+    "00000000-0000-4000-8000-000000000010",
+    "00000000-0000-4000-8000-000000000014"
+  ],
+  "testbenchOwners": [
+    "00000000-0000-4000-8000-000000000010"
+  ],
+  "apps": {
+    "arrow": "00000000-0000-4000-8000-000000000007",
+    "systems": "00000000-0000-4000-8000-000000000017"
+  },
+  "policyAssignments": [
+    "DataProtectionSecurityCenter",
+    "SqlVmAndArcSqlServersProtection",
+    "OpenSourceRelationalDatabasesProtectionSecurityCenter"
+  ]
+}

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<!-- Source of arrow-case-trace.png (1600 x 915). Span names, starts and lengths as Application
+     Insights recorded them for one development run of AR259 (21 of the trace's 635 spans). Render
+     it as arrow-agent-loop.html says, at 1600 x 915. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>One case, one trace</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { width: 1600px; height: 915px; background: #FFFFFF; font-family: "Segoe UI", system-ui, sans-serif; color: #1F2D3D; position: relative; overflow: hidden; }
+  h1 { position: absolute; left: 40px; top: 22px; font-size: 32px; font-weight: 700; letter-spacing: -0.2px; }
+  .sub { position: absolute; left: 40px; top: 68px; font-size: 18px; color: #5B6573; }
+  .legend { position: absolute; left: 40px; top: 104px; display: flex; gap: 26px; font-size: 16px; color: #3B4654; }
+  .legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .legend i { display: inline-block; width: 16px; height: 16px; border-radius: 4px; }
+  .card { position: absolute; left: 30px; top: 142px; width: 1540px; height: 728px; border: 1.5px solid #DDE3EA; border-radius: 10px; background: #FBFCFE; }
+  .head { position: absolute; top: 152px; font-size: 14px; font-weight: 700; color: #5B6573; text-transform: uppercase; letter-spacing: 0.6px; }
+  .row { position: absolute; left: 31px; width: 1538px; height: 31px; }
+  .row.alt { background: #F2F5F9; }
+  .name { position: absolute; left: 20px; top: 5px; font-family: Consolas, "Cascadia Mono", monospace; font-size: 15px; color: #1F2D3D; white-space: nowrap; }
+  .role { position: absolute; left: 590px; top: 5px; font-size: 15px; color: #5B6573; white-space: nowrap; }
+  .bar { position: absolute; top: 8px; height: 15px; border-radius: 3px; min-width: 4px; }
+  .dur { position: absolute; top: 5px; font-size: 14px; color: #3B4654; white-space: nowrap; }
+  .tick { position: absolute; top: 176px; width: 1px; height: 670px; background: #E3E8EF; }
+  .tlabel { position: absolute; top: 848px; font-size: 14px; color: #5B6573; transform: translateX(-50%); }
+  .w { background: #6C8EBF; }
+  .a { background: #8E6BA8; }
+  .c { background: #5E9C4A; }
+  .x { background: #B85450; }
+  .foot { position: absolute; left: 40px; top: 882px; font-size: 15px; color: #5B6573; }
+</style>
+</head>
+<body>
+  <h1>One case, one trace</h1>
+  <div class="sub">AR259, a 20-minute delay that ARROW ran automatically: 68 seconds from the report to the last receipt, in one OpenTelemetry trace in Application Insights.</div>
+  <div class="legend">
+    <span><i class="w"></i>ARROW workers</span>
+    <span><i class="a"></i>Foundry agents</span>
+    <span><i class="c"></i>ARROW agent tools: code the agents call</span>
+    <span><i class="x"></i>Writes to the airline's systems</span>
+  </div>
+  <div class="card"></div>
+  <div class="head" style="left:51px;">Span</div>
+  <div class="head" style="left:621px;">Ran in</div>
+  <div class="head" style="left:840px;">Seconds from the report</div>
+  <div id="rows"></div>
+  <script>
+    // Start and length in seconds, as recorded (development run; 21 of 635 spans).
+    const spans = [
+      ["Open case", "ARROW workers", 0.0, 0.04, "w"],
+      ["Assess case", "ARROW workers", 0.6, 60.99, "w"],
+      ["invoke_agent recovery-orchestrator-agent:21", "Foundry Agent Service", 6.1, 55.23, "a"],
+      ["invoke_agent disruption-detection-agent:11", "Foundry Agent Service", 8.8, 2.93, "a"],
+      ["record_flight_delay", "ARROW agent tools", 9.6, 0.99, "c"],
+      ["invoke_agent aircraft-recovery-agent:8", "Foundry Agent Service", 16.5, 4.40, "a"],
+      ["invoke_agent crew-recovery-agent:7", "Foundry Agent Service", 24.2, 3.07, "a"],
+      ["execute_tool remote_a2a_a2a-passenger.SendMessage", "Foundry Agent Service", 27.8, 14.55, "a"],
+      ["invoke_agent passenger-reaccommodation-agent:7", "Foundry Agent Service", 30.2, 11.67, "a"],
+      ["execute_tool mcp_booking.get_rebooking_plan", "Foundry Agent Service", 35.9, 2.71, "a"],
+      ["get_compensation_exposure", "ARROW agent tools", 38.9, 1.88, "c"],
+      ["invoke_agent slot-negotiation-agent:7", "Foundry Agent Service", 44.7, 2.66, "a"],
+      ["build_plan", "ARROW agent tools", 48.5, 7.29, "c"],
+      ["submit_plan", "ARROW agent tools", 58.5, 1.94, "c"],
+      ["Execute plan", "ARROW workers", 66.3, 2.04, "w"],
+      ["GET /api/recovery-options/delay/impact", "ARROW workers", 67.0, 0.17, "w"],
+      ["POST /api/delays", "ARROW workers", 67.2, 0.19, "x"],
+      ["PATCH /api/flights/AR259", "ARROW workers", 67.4, 0.20, "x"],
+      ["POST /nm/messages", "ARROW workers", 67.7, 0.14, "x"],
+      ["POST /acdm/flights/AR259/tobt", "ARROW workers", 67.9, 0.08, "x"],
+      ["POST /api/duty-changes", "ARROW workers", 68.0, 0.27, "x"],
+    ];
+    const x0 = 840, pxPerSecond = 9.6, top0 = 186, rowHeight = 31.4;
+    const out = document.getElementById("rows");
+    for (let s = 0; s <= 70; s += 10) {
+      out.insertAdjacentHTML("beforeend", `<div class="tick" style="left:${x0 + s * pxPerSecond}px"></div>`);
+      out.insertAdjacentHTML("beforeend", `<div class="tlabel" style="left:${x0 + s * pxPerSecond}px">${s}</div>`);
+    }
+    spans.forEach(([name, role, start, length, kind], i) => {
+      const left = x0 + start * pxPerSecond, width = Math.max(4, length * pxPerSecond);
+      const shown = length < 1 ? length.toFixed(2) : length.toFixed(1);
+      out.insertAdjacentHTML("beforeend",
+        `<div class="row${i % 2 ? " alt" : ""}" style="top:${top0 + i * rowHeight}px">` +
+        `<div class="name">${name}</div><div class="role">${role}</div>` +
+        `<div class="bar ${kind}" style="left:${left - 31}px; width:${width}px"></div>` +
+        `<div class="dur" style="left:${left - 31 + width + 8}px">${shown} s</div></div>`);
+    });
+  </script>
+  <div class="foot">Development environment, one run. 21 of the trace's 635 spans, names as recorded; most of the others are database queries.</div>
+</body>
+</html>

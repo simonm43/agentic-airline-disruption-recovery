@@ -1,0 +1,296 @@
+/* Operations map (operations map spec §3). Layout and styles from the approved operations map prototype;
+   scoped to .mp. */
+
+.mp { display: grid; flex: 1; grid-template-columns: 318px minmax(0, 1fr); min-height: 0; --sea: #060b14; --land: #0f1a2b; --coast: #1c2b44 }
+.mp [data-tone="needs"] { --c: var(--needs) }
+.mp [data-tone="manual"], .mp [data-tone="stopped"] { --c: var(--stopped) }
+.mp [data-tone="expert"] { --c: var(--violet) }
+.mp [data-tone="progress"] { --c: var(--accent) }
+.mp [data-tone="handled"] { --c: var(--handled) }
+.mp .num { font-variant-numeric: tabular-nums }
+
+/* Disruption list */
+.mp-side { display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--line); background: #08101d }
+.mp-head { padding: 14px 16px 10px }
+.mp-back { padding: 0; border: 0; background: none; color: var(--muted); font-size: .8rem }
+.mp-back:hover { color: var(--ink) }
+.mp-head h2 { margin: 8px 0 2px; font-size: 1.1rem }
+.mp-counts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px }
+.mp-count { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: .74rem }
+.mp-count b { color: var(--ink) }
+.mp-count::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--c) }
+.mp-list { display: grid; gap: 8px; align-content: start; min-height: 0; overflow-y: auto; padding: 4px 10px 12px; scrollbar-width: thin }
+.mp-empty { margin: 8px 6px; color: var(--muted); font-size: .84rem }
+.mp-item { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 10px; width: 100%; padding: 11px 12px 11px 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink); text-align: left }
+.mp-item:hover { border-color: #2c3e5c; background: #101c30 }
+.mp-item[aria-pressed="true"] { border-color: var(--c); box-shadow: inset 3px 0 0 var(--c) }
+.mp-badge { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--c) 16%, transparent); color: var(--c) }
+.mp-text { min-width: 0 }
+.mp-text b { display: -webkit-box; overflow: hidden; font-size: .88rem; font-weight: 650; -webkit-line-clamp: 2; -webkit-box-orient: vertical }
+.mp-state { display: block; margin-top: 3px; color: var(--c); font-size: .76rem; font-weight: 650 }
+.mp-facts { display: flex; gap: 12px; margin-top: 5px; color: var(--muted); font-size: .76rem }
+.mp-facts b { display: inline; color: var(--ink); font-size: .8rem; font-weight: 700 }
+.mp-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 4px 16px 0; padding-top: 10px; border-top: 1px solid var(--line); color: var(--muted); font-size: .74rem }
+.mp-legend span { display: inline-flex; align-items: center; gap: 5px }
+.mp-ring { display: inline-block; width: 10px; height: 10px; border: 2px solid var(--needs); border-radius: 50% }
+.mp-note { margin: auto 16px 0; padding: 12px 0 14px; color: var(--faint); font-size: .7rem; line-height: 1.45 }
+
+/* Map */
+.mp-main { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; min-width: 0; min-height: 0 }
+.mp-stage { position: relative; min-height: 0; overflow: hidden; background: radial-gradient(ellipse at 40% 40%, #0a1424, var(--sea) 70%) }
+.mp-svg { position: absolute; inset: 0; width: 100%; height: 100%; cursor: grab; user-select: none; touch-action: none }
+.mp-svg.dragging { cursor: grabbing }
+/* A click on the map focuses the drawing itself; its buttons show their own focus */
+.mp-svg:focus { outline: none }
+.mp-land { fill: var(--land); stroke: var(--coast); stroke-width: 1; vector-effect: non-scaling-stroke }
+.mp-route { fill: none; stroke: var(--accent); vector-effect: non-scaling-stroke; transition: opacity .3s; pointer-events: none }
+/* A wider invisible line over each route, flight leg and storm route takes the click and the hover (Task 3b) */
+.mp-route-hit { fill: none; stroke: transparent; stroke-width: 12px; vector-effect: non-scaling-stroke; pointer-events: stroke; cursor: pointer }
+.mp-svg.dim .mp-route-hit { pointer-events: none }
+.mp-svg:not(.dim) .mp-route.sel { opacity: .95 !important; stroke: var(--ink); stroke-width: 2.4px !important }
+.mp-hit { fill: none; stroke: transparent; stroke-width: 14px; pointer-events: stroke; cursor: pointer }
+.mp-ac { fill: #9fb3cc; cursor: pointer; transition: opacity .3s }
+.mp-ac.sel { fill: var(--ink); opacity: 1 !important }
+.mp-ac.plan { fill: var(--pc, var(--needs)) }
+.mp-ac-no { fill: #c4d2e6; font-size: 10px; font-weight: 650; cursor: pointer; paint-order: stroke; stroke: var(--sea); stroke-width: 3px }
+.mp-ap circle { fill: #6f85a6 }
+.mp-ap text { fill: var(--muted); font-size: 10.5px; font-weight: 600; paint-order: stroke; stroke: var(--sea); stroke-width: 3px }
+.mp-ap.hub circle, .mp-ap.on circle { fill: var(--ink) }
+.mp-ap.hub text, .mp-ap.on text { fill: var(--ink); font-size: 12px }
+.mp-mk { cursor: pointer; transition: opacity .3s }
+.mp-mk:focus { outline: none }
+.mp-disc { fill: #0b1422; stroke: var(--c); stroke-width: 2 }
+.mp-mk:hover .mp-disc, .mp-mk.hot .mp-disc, .mp-mk:focus-visible .mp-disc { fill: #13223a; stroke-width: 3 }
+.mp-glyph { color: var(--c) }
+.mp-lead { stroke: var(--c); stroke-width: 1.2; opacity: .6 }
+.mp-tag { fill: var(--ink); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--sea); stroke-width: 3px; text-anchor: middle }
+.mp-pulse { fill: none; stroke: var(--c); stroke-width: 2; animation: mp-pulse 1.8s ease-out infinite; transform-box: fill-box; transform-origin: center }
+@keyframes mp-pulse { from { opacity: .8; transform: scale(1) } to { opacity: 0; transform: scale(1.9) } }
+@media (prefers-reduced-motion: reduce) { .mp-pulse { animation: none; opacity: .5 } }
+
+.mp-chips { position: absolute; top: 14px; left: 16px; display: flex; flex-wrap: wrap; gap: 8px; pointer-events: none }
+.mp-chip { padding: 6px 11px; border: 1px solid var(--line); border-radius: 999px; background: rgba(8, 16, 29, .85); color: var(--muted); font-size: .78rem }
+.mp-chip b { color: var(--ink) }
+.mp-tools { position: absolute; bottom: 14px; left: 16px; display: flex; flex-wrap: wrap; gap: 6px }
+.mp-tools button { min-width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 9px; background: rgba(8, 16, 29, .9); color: var(--ink) }
+.mp-tools button.wide { padding: 0 12px; color: var(--muted); font-size: .78rem }
+.mp-tools input { width: 200px; height: 34px; padding: 0 10px; border: 1px solid var(--line); border-radius: 9px; background: rgba(8, 16, 29, .9); color: var(--ink); font-size: .8rem }
+.mp-status { position: absolute; top: 56px; left: 16px; display: flex; align-items: center; gap: 10px; max-width: min(560px, calc(100% - 32px)); padding: 9px 12px; border: 1px solid #71562f; border-radius: 9px; background: #332919; color: #f2ce91; font-size: .8rem }
+.mp-status button { flex: none; padding: 4px 12px; border: 1px solid #71562f; border-radius: 7px; background: transparent; color: #f2ce91 }
+
+/* Time dock */
+.mp-dock { min-width: 0; padding: 10px 18px 12px; border-top: 1px solid var(--line); background: #08101d }
+.mp-time { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; align-items: center; gap: 12px }
+.mp-time > button { height: 30px; padding: 0 12px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--ink); font-size: .8rem }
+.mp-tlabel { min-width: 130px; font-size: .86rem }
+.mp-tlabel b { font-size: 1.05rem }
+.mp-tlabel span { margin-left: 6px; padding: 2px 7px; border-radius: 999px; background: var(--soft); color: var(--muted); font-size: .7rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase }
+.mp-tlabel span.now { background: #0d2c38; color: var(--accent) }
+.mp-range input { width: 100%; padding: 0; border: 0; background: none; accent-color: var(--accent) }
+.mp-ticks { position: relative; height: 14px; margin-top: 2px; color: var(--faint); font-size: .68rem }
+.mp-ticks span { position: absolute; transform: translateX(-50%); white-space: nowrap }
+.mp-ticks span.start { transform: none }
+.mp-ticks span.end { transform: translateX(-100%) }
+
+/* Focus: dimmed network, the aircraft's day */
+.mp-svg.dim .mp-route { opacity: .12 !important }
+.mp-svg.dim .mp-ac { opacity: .18 }
+.mp-svg.dim .mp-ac.plan { opacity: .95 }
+.mp-leg { fill: none; stroke-width: 2.5; stroke-linecap: round }
+.mp-leg.done { stroke: #4a5a74 }
+.mp-leg.sched { stroke: var(--accent) }
+.mp-leg.moved { stroke: var(--pc) }
+.mp-leg.cancel { stroke: var(--stopped); stroke-dasharray: 6 6; opacity: .9 }
+.mp-leg.sel { stroke-width: 4.5; opacity: 1 }
+.mp-lbl { cursor: pointer }
+.mp-lbl rect { fill: #0b1422; stroke: var(--line) }
+.mp-lbl:hover rect, .mp-lbl:focus-visible rect { stroke: var(--accent) }
+.mp-lbl:focus { outline: none }
+.mp-lbl.cancel rect { stroke: #5a2424 }
+.mp-lbl.sel rect, .mp-lbl.cancel.sel rect { stroke: var(--ink); stroke-width: 1.5 }
+.mp-lbl text { fill: var(--ink); font-size: 11px }
+.mp-lbl .no { font-weight: 700 }
+.mp-lbl .was { fill: var(--faint); text-decoration: line-through }
+.mp-lbl .delta { fill: var(--pc); font-weight: 700 }
+.mp-lbl .x { fill: var(--stopped); font-weight: 700 }
+.mp-me-ring { fill: none; stroke: var(--c); stroke-width: 2 }
+.mp-me[data-flight] { cursor: pointer }
+.mp-me:focus { outline: none }
+.mp-me:focus-visible .mp-me-ring, .mp-me.sel .mp-me-ring { stroke-width: 3.5 }
+.mp-me-badge { fill: #0b1422; stroke: currentColor; stroke-width: 1.5 }
+.mp-me text { fill: var(--ink); font-size: 11.5px; font-weight: 700; paint-order: stroke; stroke: var(--sea); stroke-width: 3px }
+.mp-me text.sub { fill: var(--muted); font-weight: 500 }
+.mp-me text.out { fill: var(--stopped); font-weight: 600 }
+/* A storm at its airport (Task 4c): a dashed area, the weather mark on its edge explains it on hover or focus */
+.mp-storm-area { fill: rgba(245, 165, 36, .07); stroke: var(--needs); stroke-width: 1.6; stroke-dasharray: 5 5; pointer-events: none }
+.mp-crosswind { pointer-events: none }
+.mp-runway { stroke: #eef3fa; stroke-width: 6; stroke-linecap: round; paint-order: stroke }
+.mp-wind line { stroke: #9fd8ff; stroke-width: 2.6; stroke-linecap: round }
+.mp-wind polygon { fill: #9fd8ff }
+.mp-storm-badge { color: var(--needs); cursor: help }
+.mp-storm-badge circle { fill: #0b1422; stroke: var(--needs); stroke-width: 1.5 }
+.mp-storm-badge:focus { outline: none }
+.mp-storm-badge:focus-visible circle, .mp-storm-badge:hover circle { stroke-width: 2.5 }
+.mp-storm-tag { fill: var(--needs); font-size: 11.5px; font-weight: 700; paint-order: stroke; stroke: var(--sea); stroke-width: 3px; pointer-events: none }
+.mp-leg.mp-spread { opacity: .7 }
+.mp-spread-g { cursor: pointer }
+.mp-spread-g:focus { outline: none }
+.mp-spread-g:hover .mp-spread, .mp-spread-g:focus-visible .mp-spread, .mp-spread-g.sel .mp-spread { opacity: 1; stroke-width: 4px !important }
+.mp-storm-ap { fill: var(--ink); font-size: 12px; font-weight: 700; paint-order: stroke; stroke: var(--sea); stroke-width: 4px; pointer-events: none }
+
+/* Impact card and flight card: one column, the case or aircraft card above and the flight card below it (Task 3b) */
+.mp { position: relative }
+.mp-cards { position: absolute; z-index: 4; top: 14px; right: 14px; bottom: calc(var(--dock, 64px) + 14px); width: 372px; display: flex; flex-direction: column; gap: 10px; pointer-events: none }
+.mp-cards > * { pointer-events: auto }
+.mp-card { flex: 0 1 auto; min-height: 0; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #22324d; border-radius: 16px; background: rgba(10, 18, 32, .97); box-shadow: 0 18px 50px rgba(0, 0, 0, .45) }
+.mp-card-head { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 12px 16px 10px; border-bottom: 1px solid var(--line) }
+.mp-card-head .mp-badge { width: 44px; height: 44px; font-size: 1.1rem }
+.mp-card-head h3 { margin: 0; font-size: 1.02rem; line-height: 1.25 }
+.mp-card-head small { display: block; margin-top: 4px; color: var(--muted); font-size: .78rem; line-height: 1.6 }
+.mp-pill { display: inline-block; padding: 1px 8px; border-radius: 999px; background: color-mix(in srgb, var(--c) 16%, transparent); color: var(--c); font-size: .72rem; font-weight: 700; white-space: nowrap }
+.mp-close { width: 30px; height: 30px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--muted) }
+.mp-card-body { display: grid; gap: 10px; align-content: start; overflow-y: auto; padding: 12px 16px; scrollbar-width: thin }
+/* A case card a flight card leaves less room fades out where more of it scrolls into view */
+.mp-card-body.mp-more { -webkit-mask-image: linear-gradient(#000 calc(100% - 40px), transparent); mask-image: linear-gradient(#000 calc(100% - 40px), transparent) }
+.mp-report { margin: 0; padding: 9px 12px; border-left: 3px solid #2f4466; border-radius: 0 10px 10px 0; background: var(--soft); font-size: .82rem; line-height: 1.4 }
+.mp-report span { display: -webkit-box; overflow: hidden; -webkit-line-clamp: 2; -webkit-box-orient: vertical }
+.mp-report:hover span { -webkit-line-clamp: unset }
+.mp-report small { display: block; margin-top: 6px; color: var(--muted); font-size: .74rem }
+.mp-sec { margin: 0 0 6px; color: var(--muted); font-size: .7rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase }
+.mp-muted { margin: 0; color: var(--muted); font-size: .78rem; line-height: 1.45 }
+.mp-plans { display: grid; grid-auto-columns: minmax(0, 1fr); grid-auto-flow: column; gap: 6px }
+/* Four or more plans (what-ifs from the case chat) sit in rows of two, as on the case page, so every label fits its button */
+.mp-plans:has(> .mp-plan:nth-child(4)) { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)) }
+.mp-plan { display: grid; gap: 2px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: transparent; color: var(--ink); font-size: .82rem; font-weight: 600; text-align: left }
+.mp-plan[aria-pressed="true"] { border-color: var(--pc); background: color-mix(in srgb, var(--pc) 10%, transparent) }
+.mp-plan small { color: var(--muted); font-size: .72rem; font-weight: 500 }
+.mp-plan .mp-rec { color: var(--accent); font-weight: 700 }
+.mp-nums { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px }
+.mp-nums div { min-width: 0; padding: 7px 8px; border: 1px solid var(--line); border-radius: 10px }
+.mp-nums b { display: block; font-size: 1.02rem; font-weight: 750; letter-spacing: -.01em; white-space: nowrap }
+.mp-nums span { display: block; margin-top: 2px; color: var(--muted); font-size: .68rem; line-height: 1.25 }
+.mp-nums .na b { color: var(--faint) }
+.mp-absent { margin: 0; padding: 0 0 0 16px; color: var(--needs); font-size: .78rem }
+.mp-decide { padding: 10px 12px; border: 1px solid color-mix(in srgb, var(--dc) 45%, var(--line)); border-radius: 10px; background: color-mix(in srgb, var(--dc) 8%, transparent) }
+.mp-decide > b { color: var(--dc) }
+.mp-decide p { margin: 4px 0 0; color: var(--muted); font-size: .78rem; line-height: 1.4 }
+.mp-reasons { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 7px }
+.mp-reasons span { padding: 2px 7px; border-radius: 6px; background: var(--soft); font-size: .72rem; line-height: 1.35 }
+.mp-error { display: grid; gap: 8px; padding: 10px 12px; border: 1px solid #71562f; border-radius: 10px; background: #332919; color: #f2ce91; font-size: .8rem }
+.mp-error button { justify-self: start }
+.mp-card-foot { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--line) }
+.mp-card-foot button { flex: 1; min-height: 38px }
+.mp-facts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; font-size: .8rem }
+.mp-facts-grid span { display: block; color: var(--muted); font-size: .72rem }
+.mp-facts-grid .wide { grid-column: 1 / -1 }
+.mp-note-line { margin: 0; color: #d3b889; font-size: .78rem }
+.mp-legs { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; font-size: .8rem }
+.mp-legs li { display: grid; grid-template-columns: 64px 1fr auto; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--line) }
+.mp-link { padding: 0; border: 0; background: none; color: var(--accent); font-weight: 700; text-align: left }
+
+/* Flight card and route card (Task 3b): where the flight comes from and goes to, its times was → now, its status, aircraft,
+   passengers and the plan that moves it; a route lists its flights */
+.mp-fc { flex: none; display: flex; flex-direction: column; max-height: min(400px, 62%); overflow: hidden; border: 1px solid #22324d; border-radius: 16px; background: rgba(10, 18, 32, .97); box-shadow: 0 18px 50px rgba(0, 0, 0, .45) }
+.mp-fc:focus { outline: none }
+.mp-fc:focus-visible { border-color: var(--accent) }
+.mp-fc [data-tone="muted"] { --c: var(--muted) }
+.mp-fc-back { align-self: flex-start; margin: 10px 14px 0; padding: 0; border: 0; background: none; color: var(--muted); font-size: .76rem }
+.mp-fc-back:hover { color: var(--ink) }
+.mp-fc-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: start; padding: 12px 14px 8px }
+.mp-fc-head h3 { margin: 0; font-size: 1.05rem; line-height: 1.25; letter-spacing: .01em }
+.mp-fc-head small { display: block; margin-top: 3px; color: var(--muted); font-size: .76rem }
+.mp-fc-head .mp-close { width: 28px; height: 28px }
+.mp-fc-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; min-width: 0 }
+.mp-fc-tags h3 { margin-right: 4px }
+.mp-fc-tag { padding: 1px 8px; border-radius: 999px; background: color-mix(in srgb, var(--c) 16%, transparent); color: var(--c); font-size: .72rem; font-weight: 700; white-space: nowrap }
+.mp-fc-body { display: grid; gap: 10px; align-content: start; min-height: 0; overflow-y: auto; padding: 2px 14px 14px; scrollbar-width: thin }
+.mp-fc-route { display: grid; grid-template-columns: minmax(0, 1fr) 74px minmax(0, 1fr); gap: 8px; align-items: start }
+.mp-fc-end { min-width: 0 }
+.mp-fc-end.to { text-align: right }
+.mp-fc-end > b { display: block; font-size: 1.4rem; font-weight: 750; line-height: 1.1; letter-spacing: .03em }
+.mp-fc-end > span { display: block; overflow: hidden; color: var(--ink); font-size: .78rem; text-overflow: ellipsis; white-space: nowrap }
+.mp-fc-end > small { display: block; margin-top: 7px; color: var(--muted); font-size: .68rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase }
+.mp-fc-time { font-size: .86rem; white-space: nowrap }
+.mp-fc-time .mp-fc-was { color: var(--faint) }
+.mp-fc-time s { color: var(--faint) }
+.mp-fc-time .mp-fc-est { cursor: help; text-decoration: underline dotted var(--muted); text-underline-offset: 3px }
+.mp-fc-track { position: relative; height: 44px; margin-top: 4px; cursor: help }
+.mp-fc-track .mp-fc-line { position: absolute; top: 11px; right: 0; left: 0; border-top: 1.5px dashed #2c3e5c }
+.mp-fc-track .mp-fc-line.x { border-top-color: var(--stopped) }
+.mp-fc-track .mp-fc-done { position: absolute; top: 10px; left: 0; height: 2px; border-radius: 2px; background: var(--accent) }
+.mp-fc-track .mp-fc-plane { position: absolute; top: 3px; width: 17px; height: 17px; fill: var(--ink); transform: translateX(-50%) }
+.mp-fc-track small { position: absolute; top: 24px; right: -6px; left: -6px; color: var(--muted); font-size: .68rem; text-align: center; white-space: nowrap }
+.mp-fc-track small.mp-fc-air { color: var(--accent); font-weight: 700 }
+.mp-fc-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; margin: 0; padding-top: 10px; border-top: 1px solid var(--line); font-size: .8rem }
+.mp-fc-facts div { min-width: 0 }
+.mp-fc-facts dt { color: var(--muted); font-size: .68rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase }
+.mp-fc-facts dd { margin: 2px 0 0 }
+.mp-fc-facts [data-pax][title] { cursor: help }
+.mp-fc-facts .mp-fc-muted { color: var(--muted) }
+.mp-fc-plan { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; padding: 8px 10px; border: 1px solid color-mix(in srgb, var(--pc) 45%, var(--line)); border-radius: 10px; background: color-mix(in srgb, var(--pc) 8%, transparent); font-size: .8rem }
+.mp-fc-plan .mp-fc-name { flex: 1 1 100%; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.mp-fc-plan .mp-fc-state { color: var(--pc); font-size: .72rem; font-weight: 700 }
+.mp-fc-plan .mp-link { margin-left: auto; font-size: .8rem }
+.mp-fc-list { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none }
+.mp-fc-row { display: grid; grid-template-columns: 58px minmax(0, 1fr) auto auto; gap: 8px; align-items: baseline; width: 100%; padding: 6px 4px; border: 0; border-bottom: 1px solid var(--line); background: none; color: var(--ink); font-size: .8rem; text-align: left }
+.mp-fc-row:hover, .mp-fc-row:focus-visible { background: var(--soft) }
+.mp-fc-row > span:nth-child(2) { overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap }
+.mp-fc-row s { color: var(--faint) }
+.mp-fc-row .mp-fc-st { min-width: 64px; color: var(--c, var(--muted)); font-size: .74rem; font-weight: 700; text-align: right }
+.mp-peek { position: absolute; z-index: 6; top: 0; left: 0; display: grid; gap: 2px; max-width: 280px; padding: 7px 10px; border: 1px solid #2a3c5a; border-radius: 9px; background: rgba(8, 16, 29, .96); box-shadow: 0 10px 28px rgba(0, 0, 0, .45); color: var(--muted); font-size: .76rem; pointer-events: none }
+.mp-peek b { color: var(--ink); font-size: .8rem }
+
+/* Rotation strip */
+.mp-rot { margin-bottom: 8px }
+.mp-rot-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin-bottom: 4px; color: var(--muted); font-size: .8rem }
+.mp-rot-head b { color: var(--ink); font-size: .86rem }
+.mp-rot-head .out { color: var(--stopped); font-weight: 650 }
+.mp-strip { display: block; width: 100%; height: 90px; cursor: pointer }
+.mp-strip text { fill: var(--muted); font-size: 10.5px }
+.mp-strip .mp-row { fill: var(--ink); font-weight: 600 }
+.mp-strip .mp-bar text { font-size: 9.5px; font-weight: 700 }
+.mp-strip .mp-bar text.struck { text-decoration: line-through }
+.mp-strip .mp-grid { stroke: #16233a }
+.mp-strip .mp-nowline { stroke: var(--ink); stroke-dasharray: 3 3 }
+.mp-strip .mp-tline { stroke: var(--accent); stroke-width: 2 }
+
+@media (max-width: 1100px) {
+  .mp { grid-template-columns: 300px minmax(0, 1fr) }
+  .mp-cards { top: 0; left: 0; right: auto; bottom: 0; width: 300px; gap: 0 }
+  .mp-cards.open { border-right: 1px solid var(--line); background: #0a1220; pointer-events: auto }
+  .mp-card, .mp-fc { border: 0; border-radius: 0; background: transparent; box-shadow: none }
+  .mp-card:not([hidden]) + .mp-fc { border-top: 1px solid var(--line) }
+  .mp-card-head { grid-template-columns: 38px minmax(0, 1fr) auto }
+  .mp-card-head .mp-badge { width: 38px; height: 38px }
+  .mp-nums { grid-template-columns: 1fr 1fr }
+}
+@media (max-width: 980px) {
+  .mp { height: calc(100dvh - 64px); min-height: 520px }
+}
+@media (max-width: 680px) {
+  .mp { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(360px, 1fr); height: auto; min-height: 0 }
+  .mp-side { max-height: 40dvh; border-right: 0; border-bottom: 1px solid var(--line) }
+  .mp-legend { display: none }
+  .mp-note { margin-top: 0; padding: 6px 0 10px }
+  .mp-main { min-height: 62dvh }
+  .mp-chips { gap: 6px }
+  .mp-chip { padding: 4px 9px; font-size: .72rem }
+  .mp-tools { right: 12px; left: 12px }
+  .mp-tools input { flex: 1; width: auto; min-width: 0 }
+  .mp-time { grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px }
+  .mp-time .mp-range { grid-column: 1 / -1; grid-row: 2 }
+  .mp-dock { padding: 8px 12px 10px }
+  .mp-cards { right: 0; bottom: auto; width: auto }
+  .mp-cards.open { border-right: 0; background: none; pointer-events: none }
+  .mp-card { max-height: 62dvh; border-bottom: 1px solid var(--line); background: #0a1220; box-shadow: 0 18px 40px rgba(0, 0, 0, .5) }
+  /* With the flight sheet open the case card keeps only its header and the list steps aside: the chosen route shows between them */
+  .mp.mp-fc-open { grid-template-rows: minmax(360px, 1fr) }
+  .mp.mp-fc-open .mp-side { display: none }
+  .mp.mp-fc-open .mp-card-body, .mp.mp-fc-open .mp-card-foot { display: none }
+  .mp.mp-fc-open .mp-card-head { border-bottom: 0 }
+  /* The flight card is a bottom sheet on a phone */
+  .mp-fc { position: fixed; z-index: 30; right: 0; bottom: 0; left: 0; max-height: 50dvh; border-top: 1px solid #22324d; border-radius: 16px 16px 0 0; background: #0a1220; box-shadow: 0 -14px 40px rgba(0, 0, 0, .55) }
+  .mp-card:not([hidden]) + .mp-fc { border-top: 1px solid #22324d }
+  .mp-rot { overflow-x: auto }
+  .mp-strip { min-width: 640px }
+}

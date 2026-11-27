@@ -1,0 +1,57 @@
+{
+  "disruption-detection-agent": {
+    "version": "1.1",
+    "description": "Disruption Detection Agent (L4): reads a report, records the disruption in ARROW and predicts its knock-on; changes no airline system.",
+    "skills": [
+      {
+        "id": "detect-disruption",
+        "name": "Detect disruption",
+        "description": "Given a report, or a disruption's facts to confirm, record or confirm the disruption and report its knock-on."
+      }
+    ]
+  },
+  "aircraft-recovery-agent": {
+    "version": "1.1",
+    "description": "Aircraft Recovery Agent (L2, recommend only): explains Schedule-offered aircraft options and recommends one.",
+    "skills": [
+      {
+        "id": "recommend-aircraft-option",
+        "name": "Recommend aircraft option",
+        "description": "Given a disruption's facts, report Schedule recovery options and recommend one option_id."
+      }
+    ]
+  },
+  "crew-recovery-agent": {
+    "version": "1.1",
+    "description": "Crew Recovery Agent (L3, within pre-approved rules): checks flight-time limits and recommends a legal reserve.",
+    "skills": [
+      {
+        "id": "assess-crew",
+        "name": "Assess crew limits and reserves",
+        "description": "Given a disruption's facts, option_id and additional_delay_minutes, report FDP breaches and reserve options."
+      }
+    ]
+  },
+  "passenger-reaccommodation-agent": {
+    "version": "1.1",
+    "description": "Passenger Re-accommodation Agent (L3, within rebooking policy): reports missed connections and rebooking counts.",
+    "skills": [
+      {
+        "id": "assess-passengers",
+        "name": "Assess passengers",
+        "description": "Given a disruption's facts, option_id, additional_delay_minutes and case_id, report misconnections, the rebooking plan counts and the EU261 exposure."
+      }
+    ]
+  },
+  "slot-negotiation-agent": {
+    "version": "1.1",
+    "description": "Slot Negotiation Agent (L3, within allocated slots): checks LIS capacity and recommends delay messages.",
+    "skills": [
+      {
+        "id": "assess-slots",
+        "name": "Assess slots",
+        "description": "Given a disruption's facts, option_id and additional_delay_minutes, report capacity fit and any extra delay needed."
+      }
+    ]
+  }
+}

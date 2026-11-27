@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ARROW Test Bench</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <span class="brand">ARROW</span><span class="product">Test Bench</span>
+    <div class="control" aria-label="Operating day">
+      <span id="day" class="label">Day …</span>
+      <button id="reset" type="button">Reset</button>
+      <span id="reset-progress" class="progress" role="status" aria-live="polite"></span>
+    </div>
+  </header>
+  <main>
+    <section class="panel" aria-labelledby="send-title">
+      <div class="panel-head">
+        <h2 id="send-title">Demo cases</h2>
+      </div>
+      <div id="presets" class="presets" aria-label="Demo cases"></div>
+      <p class="subtle cases-note">Press Reset first for a clean day. Expected outcomes hold with the release rules (cost limit €20,000, rebooking limit 10).</p>
+      <form id="event-form" class="event-form" novalidate>
+        <label class="wide">What happened? <textarea name="text" rows="3" maxlength="2000"
+          placeholder="Write it as any airline system would, e.g. Border-control queues (Entry/Exit System checks) are holding passengers for AR259: it will leave about 20 minutes late."></textarea></label>
+        <label>Sending system <input name="system" maxlength="100" placeholder="e.g. Ground handling" autocomplete="off"></label>
+        <button id="send" type="submit" class="primary" disabled>Send</button>
+        <p id="form-error" class="error" role="alert" hidden></p>
+        <p id="send-result" class="subtle" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+    <section class="panel" aria-labelledby="events-title">
+      <div class="panel-head">
+        <h2 id="events-title">Events today</h2>
+        <span class="subtle">Sent → queued → ARROW case → outcome</span>
+      </div>
+      <ol id="events" class="events"></ol>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

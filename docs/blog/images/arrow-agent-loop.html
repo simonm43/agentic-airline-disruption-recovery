@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<!-- Source of arrow-agent-loop.png (1600 x 980). To render it from the repository root, serve this
+     folder (the pinned Playwright CLI refuses file: addresses), then open the page, resize and
+     take a screenshot with the CLI:
+       .venv\Scripts\python.exe -m http.server 8791 --bind 127.0.0.1 --directory docs\blog\images
+       playwright-cli -s=<name> open http://127.0.0.1:8791/arrow-agent-loop.html --config=tools\browser\cli.config.json
+       playwright-cli -s=<name> resize 1600 980; playwright-cli -s=<name> screenshot --filename=<png>
+     Colours follow the architecture diagram: violet agents, green code, amber OCC, orange airline
+     systems. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The agent loop</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { width: 1600px; height: 980px; background: #FFFFFF; font-family: "Segoe UI", system-ui, sans-serif; color: #1F2D3D; position: relative; overflow: hidden; }
+  h1 { position: absolute; left: 40px; top: 22px; font-size: 32px; font-weight: 700; letter-spacing: -0.2px; }
+  .sub { position: absolute; left: 40px; top: 68px; font-size: 18px; color: #5B6573; }
+  .lane { position: absolute; left: 30px; width: 1540px; border-radius: 10px; border: 1.5px solid; }
+  .lane-label { position: absolute; left: 30px; width: 56px; display: flex; align-items: center; justify-content: center; }
+  .lane-label div { transform: rotate(-90deg); white-space: nowrap; text-align: center; line-height: 1.15; }
+  .lane-label b { display: block; font-size: 17px; }
+  .lane-label span { display: block; font-size: 13.5px; opacity: 0.85; }
+  .box { position: absolute; border: 1.8px solid; border-radius: 10px; padding: 11px 13px; display: flex; flex-direction: column; justify-content: center; z-index: 2; }
+  .box b { font-size: 19px; font-weight: 700; line-height: 1.22; }
+  .box p { font-size: 16px; line-height: 1.3; color: #3B4654; margin-top: 4px; }
+  .agent { background: #E9DFF0; border-color: #8E6BA8; }
+  .code { background: #D5E8D4; border-color: #5E9C4A; }
+  .occ { background: #FFF2CC; border-color: #C9A227; }
+  .sys { background: #FFE9D1; border-color: #D08A1C; }
+  .pill { position: absolute; border: 1.8px solid #4D4D4D; border-radius: 20px; background: #FFFFFF; font-size: 17px; font-weight: 600; display: flex; align-items: center; justify-content: center; z-index: 2; }
+  .frame { position: absolute; border: 2.5px dashed #6A4C85; border-radius: 18px; background: rgba(106, 76, 133, 0.035); z-index: 1; }
+  .frame-label { position: absolute; z-index: 2; }
+  .frame-label b { display: block; font-size: 20px; color: #6A4C85; }
+  .frame-label span { display: block; font-size: 16px; color: #3B4654; line-height: 1.3; }
+  .chips { display: flex; gap: 8px; margin-top: 9px; }
+  .chip { font-size: 14.5px; font-weight: 700; border-radius: 12px; padding: 2px 10px; border: 1.5px solid; background: #FFFFFF; }
+  .chip.g { color: #3F7A2E; border-color: #5E9C4A; }
+  .chip.a { color: #8A6D00; border-color: #C9A227; }
+  .chip.r { color: #9A3B36; border-color: #B85450; }
+  svg { position: absolute; left: 0; top: 0; z-index: 1; }
+  .lbl { position: absolute; z-index: 3; font-size: 14.5px; line-height: 1.2; white-space: nowrap; }
+  .mono { font-family: Consolas, "Cascadia Mono", monospace; font-size: 14.5px; }
+</style>
+</head>
+<body>
+  <h1>The agent loop</h1>
+  <div class="sub">One recovery option at a time. Agents read and propose; ARROW's code builds, prices, checks and routes every plan; the OCC approves the major ones; only the executor writes.</div>
+
+  <!-- Lanes -->
+  <div class="lane" style="top:110px; height:332px; background:#FBF8FD; border-color:#D9C9E6;"></div>
+  <div class="lane" style="top:450px; height:250px; background:#F5FAF4; border-color:#C6DDC1;"></div>
+  <div class="lane" style="top:708px; height:132px; background:#FFFBEE; border-color:#EBD98F;"></div>
+  <div class="lane" style="top:848px; height:116px; background:#FFF9F1; border-color:#F0C998;"></div>
+  <div class="lane-label" style="top:110px; height:332px; color:#6A4C85;"><div><b>AI agents</b><span>Microsoft Foundry</span></div></div>
+  <div class="lane-label" style="top:450px; height:250px; color:#3F7A2E;"><div><b>ARROW's code</b><span>decides</span></div></div>
+  <div class="lane-label" style="top:708px; height:132px; color:#8A6D00;"><div><b>OCC</b><span>people</span></div></div>
+  <div class="lane-label" style="top:848px; height:116px; color:#A86A0B;"><div><b>Airline</b><span>systems</span></div></div>
+
+  <!-- The loop -->
+  <div class="frame" style="left:540px; top:118px; width:520px; height:574px;"></div>
+  <div class="frame-label" style="left:558px; top:126px;">
+    <b>For each option, one at a time</b>
+    <span>delay, then swap, then cancel</span>
+    <span>stops at the first automatic plan, or after four</span>
+  </div>
+
+  <svg width="1600" height="980" viewBox="0 0 1600 980">
+    <defs>
+      <marker id="hg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4D4D4D"/></marker>
+      <marker id="hp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6A4C85"/></marker>
+      <marker id="hgr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5E9C4A"/></marker>
+      <marker id="ha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B8901A"/></marker>
+      <marker id="hr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B85450"/></marker>
+      <marker id="hv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8E6BA8"/></marker>
+    </defs>
+    <g fill="none" stroke-linejoin="round">
+      <!-- Assess -->
+      <polyline points="200,162 200,210" stroke="#4D4D4D" stroke-width="2" marker-end="url(#hg)"/>
+      <polyline points="200,362 200,490" stroke="#4D4D4D" stroke-width="2" marker-end="url(#hg)"/>
+      <polyline points="300,575 417,575 417,364" stroke="#4D4D4D" stroke-width="2" marker-end="url(#hg)"/>
+      <polyline points="512,287 554,287" stroke="#4D4D4D" stroke-width="2" marker-end="url(#hg)"/>
+      <!-- Loop -->
+      <polyline points="776,287 818,287" stroke="#6A4C85" stroke-width="3.5" marker-end="url(#hp)"/>
+      <polyline points="930,362 930,490" stroke="#6A4C85" stroke-width="3.5" marker-end="url(#hp)"/>
+      <polyline points="666,492 666,366" stroke="#6A4C85" stroke-width="3.5" marker-end="url(#hp)"/>
+      <!-- Recommend -->
+      <polyline points="1060,287 1104,287" stroke="#4D4D4D" stroke-width="2" marker-end="url(#hg)"/>
+      <polyline points="1240,362 1240,490" stroke="#4D4D4D" stroke-width="2" marker-end="url(#hg)"/>
+      <polyline points="1150,492 1150,366" stroke="#4D4D4D" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#hg)"/>
+      <!-- Routes -->
+      <polyline points="1306,560 1384,560" stroke="#5E9C4A" stroke-width="3" marker-end="url(#hgr)"/>
+      <polyline points="1206,658 1206,716" stroke="#B8901A" stroke-width="3" marker-end="url(#ha)"/>
+      <polyline points="1306,774 1420,774 1420,661" stroke="#5E9C4A" stroke-width="3" marker-end="url(#hgr)"/>
+      <polyline points="1106,800 880,800 880,661" stroke="#B8901A" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#ha)"/>
+      <!-- Reads and writes -->
+      <polyline points="640,692 640,857" stroke="#8E6BA8" stroke-width="2.5" stroke-dasharray="2 6" stroke-linecap="round" marker-end="url(#hv)"/>
+      <polyline points="1500,658 1500,857" stroke="#B85450" stroke-width="3.5" marker-end="url(#hr)"/>
+    </g>
+  </svg>
+
+  <!-- Assess -->
+  <div class="pill" style="left:100px; top:124px; width:200px; height:38px;">Report or event</div>
+  <div class="box agent" style="left:100px; top:212px; width:200px; height:150px;"><b>Detection agent</b><p>records the disruption with a typed tool</p></div>
+  <div class="box code" style="left:100px; top:492px; width:200px; height:166px;"><b>Code checks every value</b><p>and returns the knock-on: flights made late</p></div>
+  <div class="box agent" style="left:322px; top:212px; width:190px; height:150px;"><b>Aircraft agent</b><p>lists the options: delay, swap, cancel</p></div>
+
+  <!-- Loop -->
+  <div class="box agent" style="left:556px; top:212px; width:220px; height:150px;"><b>Crew, Passenger and Slot agents</b><p>assess this option, read only</p></div>
+  <div class="box agent" style="left:820px; top:212px; width:220px; height:150px;"><b>Orchestrator decides</b><p>identifiers and yes-or-no choices only</p></div>
+  <div class="box code" style="left:556px; top:492px; width:484px; height:166px;"><b>Code builds the plan</b><p>from the systems' answers, prices it, checks every rule and routes it</p>
+    <div class="chips"><span class="chip g">automatic</span><span class="chip a">OCC decides</span><span class="chip r">blocked: never runs</span></div></div>
+
+  <!-- Recommend and act -->
+  <div class="box agent" style="left:1106px; top:212px; width:200px; height:150px;"><b>Orchestrator recommends</b><p>one plan, with its reason</p></div>
+  <div class="box code" style="left:1106px; top:492px; width:200px; height:166px;"><b>Code checks it</b><p>sends it back once if an option is missing or another plan disrupts fewer passengers</p></div>
+  <div class="box code" style="left:1386px; top:492px; width:184px; height:166px;"><b>Executor, the only writer</b><p>re-checks, records the disruption first, acts with receipts</p></div>
+  <div class="box occ" style="left:1106px; top:718px; width:200px; height:112px;"><b>OCC decides</b><p>a duty manager approves one plan or rejects</p></div>
+  <div class="box sys" style="left:100px; top:860px; width:1470px; height:92px; align-items:center; text-align:center;"><b>Airline and partner systems, each through its own interface</b><p>operations control · maintenance · crew · booking · slots · EUROCONTROL · airport · ground handling</p></div>
+
+  <!-- Arrow labels -->
+  <div class="lbl" style="left:208px; top:414px; color:#3B4654;">typed tool</div>
+  <div class="lbl" style="left:674px; top:408px; color:#6A4C85; font-weight:700;">next<br>option</div>
+  <div class="lbl mono" style="left:938px; top:414px; color:#6A4C85;">build_plan</div>
+  <div class="lbl" style="left:1068px; top:258px; color:#3B4654;">stop</div>
+  <div class="lbl mono" style="left:1248px; top:414px; color:#3B4654;">submit_plan</div>
+  <div class="lbl" style="left:1158px; top:402px; color:#3B4654;">sent<br>back</div>
+  <div class="lbl" style="left:1312px; top:533px; color:#3F7A2E; font-weight:700;">automatic</div>
+  <div class="lbl" style="left:1214px; top:672px; color:#8A6D00; font-weight:700;">OCC decides</div>
+  <div class="lbl" style="left:1316px; top:750px; color:#3F7A2E; font-weight:700;">approves</div>
+  <div class="lbl" style="left:1508px; top:752px; color:#9A3B36; font-weight:700;">writes</div>
+  <div class="lbl" style="left:890px; top:752px; color:#8A6D00;">what-if from the chat:<br>same code, never automatic</div>
+  <div class="lbl" style="left:648px; top:764px; color:#6A4C85;">read only</div>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "agentic-airline-disruption-recovery-browser-tools",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Developer-only browser automation; not the application runtime.",
+  "scripts": {
+    "browser": "playwright-cli",
+    "check": "playwright-cli --version",
+    "smoke": "node smoke.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@playwright/cli": "0.1.22"
+  }
+}

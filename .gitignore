@@ -1,0 +1,37 @@
+# Dependency and Python caches
+node_modules/
+__pycache__/
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.coverage
+htmlcov/
+.local/
+.superpowers/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+.azure/
+*.pfx
+*.p12
+*.key
+*.pem
+
+# Generated browser artifacts and authentication state
+.playwright-cli/
+.playwright/
+playwright-report/
+test-results/
+
+# Generated datasets and local tool caches
+data/generated/
+tools/data/generated/
+tools/data/cache/
+
+# Generated build outputs
+dist/
+build/

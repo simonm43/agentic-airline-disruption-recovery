@@ -1,0 +1,94 @@
+{
+  "status": "approved",
+  "scope": "Read-only Dev hosted-chat proof; telemetry dependencies only",
+  "approved_on": "2026-11-06",
+  "reason": "Stable Microsoft hosting packages require these prerelease tracing/exporter dependencies. No core service preview is selected.",
+  "risk": "Instrumentation API changes or missing traces; pin versions and verify the actual hosted workflow.",
+  "fallback": "Stop on integration failures; retain actual service response IDs and explicitly disclose unavailable traces. Do not silently downgrade safety or fabricate observability.",
+  "dependencies": [
+    {
+      "package": "azure-core-tracing-opentelemetry",
+      "version": "1.0.0b13"
+    },
+    {
+      "package": "azure-monitor-opentelemetry-exporter",
+      "version": "1.0.0b59"
+    },
+    {
+      "package": "opentelemetry-exporter-http-transport",
+      "version": "0.66b2"
+    },
+    {
+      "package": "opentelemetry-exporter-otlp-common",
+      "version": "0.66b2"
+    },
+    {
+      "package": "opentelemetry-instrumentation",
+      "version": "0.66b2"
+    },
+    {
+      "package": "opentelemetry-instrumentation-asgi",
+      "version": "0.66b2"
+    },
+    {
+      "package": "opentelemetry-instrumentation-dbapi",
+      "version": "0.66b2"
+    },
+    {
+      "package": "opentelemetry-instrumentation-django",
+      "version": "0.66b2"
+    },
+    {
+      "package": "opentelemetry-instrumentation-fastapi",
+      "version": "0.66b2"
+    },
+    {
+      "package": "opentelemetry-instrumentation-flask",
+      "version": "0.66b2"
+    },
+    {
+      "package": "opentelemetry-instrumentation-httpx",
+      "version": "0.66b2"
+    },
+    {
+      "package": "opentelemetry-instrumentation-logging",
+      "version": "0.66b2"
+    },
+    {
+      "package": "opentelemetry-instrumentation-openai-v2",
+      "version": "2.3b0"
+    },
+    {
+      "package": "opentelemetry-instrumentation-psycopg2",
+      "version": "0.66b2"
+    },
+    {
+      "package": "opentelemetry-instrumentation-requests",
+      "version": "0.66b2"
+    },
+    {
+      "package": "opentelemetry-instrumentation-urllib",
+      "version": "0.66b2"
+    },
+    {
+      "package": "opentelemetry-instrumentation-urllib3",
+      "version": "0.66b2"
+    },
+    {
+      "package": "opentelemetry-instrumentation-wsgi",
+      "version": "0.66b2"
+    },
+    {
+      "package": "opentelemetry-semantic-conventions",
+      "version": "0.66b2"
+    },
+    {
+      "package": "opentelemetry-util-genai",
+      "version": "0.3b0"
+    },
+    {
+      "package": "opentelemetry-util-http",
+      "version": "0.66b2"
+    }
+  ]
+}

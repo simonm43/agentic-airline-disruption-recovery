@@ -1,0 +1,333 @@
+{
+ "day": "2026-11-22",
+ "captured_from": "main 9f5992f: record the disruption, then read by its event id",
+ "cases": {
+  "case1": {
+   "facts": {
+    "type": "flight_delay",
+    "flight_no": "AR259",
+    "delay_minutes": 20,
+    "cause": "border_control"
+   },
+   "summary": {
+    "options": [
+     [
+      "delay",
+      "delay",
+      "Fly AR259 20 min late and carry the delay through the aircraft's rotation",
+      2
+     ]
+    ],
+    "knock_on": [
+     1,
+     20
+    ],
+    "rebooking": {
+     "delay": [
+      0,
+      0,
+      0
+     ]
+    },
+    "standby_crews": {
+     "delay": []
+    }
+   },
+   "sha256": {
+    "recovery_options": "71503132e48d1f1243659180986c0964d974d2d7c6bc5b51184b553a88dee847",
+    "knock_on": "b1f5e8f22f9670e1162e96de5c71203d9289f586acf3512b9289d4912878022b",
+    "delay/impact/booking": "22ede0599fee0d8f0ad471d5a96b57fdd006bf322910d7ead5af8eb66de7dbd7",
+    "delay/impact/crew": "3ca766ea9dc683bc76bdac5d9523e77c08315132e44b4a948a8c84b3459c1d9f",
+    "delay/impact/slots": "bcedd626dc694f221c7f36fd76702b7176bf07c353a7d4adda3444140881191a",
+    "delay/rebooking_plan": "ac580c759a7454747505be7c114fb8276bc32a5b81e7fbf65bcd9870bb54bde0",
+    "delay/standby_crews": "a9d338ca7334742070a5137dc316d4a1b328c279458c8ff9de18ea9a337656f4",
+    "delay/duty_plan": "5fb11c451b450b4062e636a98d248ec5f0f505741a5ddae4e75d2fcd4cb2f807"
+   }
+  },
+  "case2": {
+   "facts": {
+    "type": "flight_delay",
+    "flight_no": "AR444",
+    "delay_minutes": 70,
+    "cause": "staff_shortage"
+   },
+   "summary": {
+    "options": [
+     [
+      "delay",
+      "delay",
+      "Fly AR444 70 min late and carry the delay through the aircraft's rotation",
+      5
+     ],
+     [
+      "cancel",
+      "cancel",
+      "Cancel AR861\u2013AR862 and put the rest of the rotation back on time",
+      5
+     ],
+     [
+      "cancel-last",
+      "cancel",
+      "Fly the earlier flights late and cancel AR1053\u2013AR1054, the aircraft's last round trip",
+      5
+     ]
+    ],
+    "knock_on": [
+     5,
+     70
+    ],
+    "rebooking": {
+     "cancel": [
+      329,
+      43,
+      286
+     ],
+     "cancel-last": [
+      312,
+      6,
+      306
+     ],
+     "delay": [
+      11,
+      6,
+      5
+     ]
+    },
+    "standby_crews": {
+     "cancel": [],
+     "cancel-last": [],
+     "delay": []
+    }
+   },
+   "sha256": {
+    "recovery_options": "5107bbe5a05c2effb4e9ceb3c637932eeefe280e56bda2b6c3d8c7584c076872",
+    "knock_on": "72fd7a13f18709828e1a147ff30ee7950c5c701e3760607052d0f68407e6902c",
+    "cancel/impact/booking": "3edc854259a22031cc5146068b34fca47148899c020bf97c7db453faef9cdedb",
+    "cancel/impact/crew": "d4b8418bc8928a04086a50db671853d29968712c2ebdbd35289f722a21a201be",
+    "cancel/impact/slots": "a2fd5e578f002ef48065b121851ebe9d39d7bfed91cde9b8337b7178d374f063",
+    "cancel/rebooking_plan": "b46e107f9517e608c4776e8ec5796ec268d41191c2fbacd9008b0fbfcc7a8768",
+    "cancel/standby_crews": "3fb55ca7f5c6216b76bee9d852ba2b27578a9afa7b6201a3e7501b68af2ebf46",
+    "cancel/duty_plan": "bfe61c794e1f1b96abecdd59c78bbaf8bb1367a955c26ad9b30f8824d245d2f0",
+    "cancel-last/impact/booking": "8459cb5de094cf595b06bf613d883f046cc18c343b22fc877fa05deeee6c7ae0",
+    "cancel-last/impact/crew": "99263af304f0c56bffd4e2ec70038309eb247497d6c49b125b4c1fce2a54e46f",
+    "cancel-last/impact/slots": "faf66ba442b375d4aff5bc8dd2a76247ea4cb4f7cf519e4ebd521878660e27a9",
+    "cancel-last/rebooking_plan": "ce53267604708441699b419841ee02b2f417a8b7986aa2ec51b076830dfc5fd5",
+    "cancel-last/standby_crews": "6cd14ecb982f8f0daf55125f7eb938b4ec24bce90d4f850d0dcc3e0afb486544",
+    "cancel-last/duty_plan": "be063fab4144df7b7d2ecda1ac085b4841db5181ba03861f4f793c79a95ef374",
+    "delay/impact/booking": "bc2de66587cb623654e5d6b4c073f49a778d0ad3866f684a4b763d4eccbe8a48",
+    "delay/impact/crew": "2f13a7efc84a5b5656312fa37e86bcd3c1ede21d7a942d9eaa44910f9806d298",
+    "delay/impact/slots": "f8ed22419551d987ce850bafc778e179c509bf6ab4851c3907ad64eb2de6cc1c",
+    "delay/rebooking_plan": "bdf40fafa6a3d3cf5f4582117b5c243f08520024634f751fc70f46297270a417",
+    "delay/standby_crews": "a9d338ca7334742070a5137dc316d4a1b328c279458c8ff9de18ea9a337656f4",
+    "delay/duty_plan": "6259817719827c1971f59257a0f540eaa6a39c950a982a05873c6792836305cc"
+   }
+  },
+  "case3": {
+   "facts": {
+    "type": "aircraft_defect",
+    "aircraft_reg": "CS-TQA",
+    "unavailable_minutes": 240
+   },
+   "summary": {
+    "options": [
+     [
+      "delay",
+      "delay",
+      "Wait for maintenance and delay the rotation",
+      4
+     ],
+     [
+      "cancel",
+      "cancel",
+      "Cancel through a safe aircraft-position boundary; retain later flights",
+      2
+     ]
+    ],
+    "knock_on": [
+     4,
+     195
+    ],
+    "rebooking": {
+     "cancel": [
+      324,
+      239,
+      85
+     ],
+     "delay": [
+      73,
+      34,
+      39
+     ]
+    },
+    "standby_crews": {
+     "cancel": [],
+     "delay": []
+    }
+   },
+   "sha256": {
+    "recovery_options": "e37e15246a48c635db7c81bfbd502f5eb66a90bdf1e35442e6ee7325f3cc50bd",
+    "knock_on": "75e086fecd8660597048912432eba5d6dc621743dd77ded1b1cfc7ddd61e7d90",
+    "cancel/impact/booking": "0135b71411955368097b3efaddae21e8fd20cc96de6864aae4179e9bd52fa81a",
+    "cancel/impact/crew": "24f7f54ab90606204b323c75b987925920ce15ede6ae99efb365e757bf306f31",
+    "cancel/impact/slots": "b1caea50652f61f79ca59c66011b788233b1fa18eba90b9da5330b532fbefdf0",
+    "cancel/rebooking_plan": "a6ffb4f838722bb3fdab37f83361cf6c5ca05d3021abbeb9f3a77698d2d10692",
+    "cancel/standby_crews": "3fb55ca7f5c6216b76bee9d852ba2b27578a9afa7b6201a3e7501b68af2ebf46",
+    "cancel/duty_plan": "cc381300338aa9476e532ad6a3a4edf8c9c2897dec1aa571f96c15faed076f4a",
+    "delay/impact/booking": "82096ca821fdfea21ce56d7ce222e2af7175383f38d475214337fd643b185adf",
+    "delay/impact/crew": "11771c901367301759a37013ff41fbb68e2b609d1be1c5f4812280634f30cfc9",
+    "delay/impact/slots": "6c4a06781d63d5c6ae667b595513e5c058113687160c6c3296f1431c99bfceb7",
+    "delay/rebooking_plan": "f4f51a7a3ad6daecdd7b35a36921b2bb609722807a0c297d1b3b85c3f1447b3e",
+    "delay/standby_crews": "a9d338ca7334742070a5137dc316d4a1b328c279458c8ff9de18ea9a337656f4",
+    "delay/duty_plan": "e452d4ec5bf8a6e54212f28927603a1ba1ae36695b309b7d6b36118b324adfb0"
+   }
+  },
+  "case4": {
+   "facts": {
+    "type": "flight_delay",
+    "flight_no": "AR689",
+    "delay_minutes": 60,
+    "cause": "late_inbound"
+   },
+   "summary": {
+    "options": [
+     [
+      "delay",
+      "delay",
+      "Fly AR689 60 min late and carry the delay through the aircraft's rotation",
+      4
+     ],
+     [
+      "cancel",
+      "cancel",
+      "Cancel AR689\u2013AR690 and put the rest of the rotation back on time",
+      4
+     ],
+     [
+      "cancel-last",
+      "cancel",
+      "Fly the earlier flights late and cancel AR941\u2013AR942, the aircraft's last round trip",
+      4
+     ]
+    ],
+    "knock_on": [
+     4,
+     60
+    ],
+    "rebooking": {
+     "cancel": [
+      399,
+      22,
+      377
+     ],
+     "cancel-last": [
+      432,
+      0,
+      432
+     ],
+     "delay": [
+      0,
+      0,
+      0
+     ]
+    },
+    "standby_crews": {
+     "cancel": [],
+     "cancel-last": [],
+     "delay": [
+      "R1"
+     ]
+    }
+   },
+   "sha256": {
+    "recovery_options": "40f281a2395e9b903cf87f8604b495bfd8df83fbddf336d96921ffd58058bbc7",
+    "knock_on": "3f3f4f522322d48497599cf3bb8dbdcc80013187f472b41581b890482eaccf88",
+    "cancel/impact/booking": "5298fd20493aa78ab343aafde847852486fa5a44429e27191725e6b444605c8e",
+    "cancel/impact/crew": "7fc6084263edc9414d616350c62a9bc5eb9d2844c4e51fc4583bf5ba01b80120",
+    "cancel/impact/slots": "0c91270a7f2a46a99b6a986997e7865753d636350455ee9db9e04e6e396223fd",
+    "cancel/rebooking_plan": "741f3f538cf554e3d7277d8ce8ef0f8580934c5c939a1851e89ede205327419e",
+    "cancel/standby_crews": "3fb55ca7f5c6216b76bee9d852ba2b27578a9afa7b6201a3e7501b68af2ebf46",
+    "cancel/duty_plan": "843f44c073295fd7e92f7a4807e1d9ae9a3c28f366b2328788c98c7a2ac3bd94",
+    "cancel-last/impact/booking": "81edd012d77fad1c9a65165fd46d204ac463f3dcb8435ef978de8221dc197e38",
+    "cancel-last/impact/crew": "944d3e739d22535734818007d21ea2803d192bf603bc51a8848e333271b4cace",
+    "cancel-last/impact/slots": "9cf8e5eed9832e4f632658dfb547df75af324d1e6b6b6dce5fab6f06e48ac515",
+    "cancel-last/rebooking_plan": "298a76500a53a033af5133b1b346c7d8720e3d1248ac3072533868bdc14219b3",
+    "cancel-last/standby_crews": "6cd14ecb982f8f0daf55125f7eb938b4ec24bce90d4f850d0dcc3e0afb486544",
+    "cancel-last/duty_plan": "6887450b51d68dbaf511cefc8053cd2c63d94c7ee4971feb3b638171da26fc45",
+    "delay/impact/booking": "7a1c559f1a5735b57073851c2df53010728f7b7973c7a5395ce0a1467c9ea5e2",
+    "delay/impact/crew": "4ac0e955d0f73edeb0cff64ddc50b1fe798559ea555a8ea15bb0da0a0ad494a0",
+    "delay/impact/slots": "b772931da166ec6ad3d5a6cda6d7aaa949dd5b02d52caf4b0b80b0e4044bc44f",
+    "delay/rebooking_plan": "b0ca5f5f2a0c832fb2b8a4a9311de12c50a0ba303526763f89426f384834ced5",
+    "delay/standby_crews": "dfbbf1f23297d635ad3d976eb1983c9143c1d48e5ee4d4b38953faf9baec10b6",
+    "delay/duty_plan": "8c9f2d7cfee3971fe477216b941dce822b10182ac486fd7f4f41046f5901a771"
+   }
+  },
+  "case5": {
+   "facts": {
+    "type": "weather",
+    "airport": "LIS",
+    "hazard": "crosswind",
+    "window_start": "16:00",
+    "window_end": "18:00",
+    "hourly_rate": 24
+   },
+   "summary": {
+    "options": [
+     [
+      "delay",
+      "delay",
+      "Accept the reduced Lisbon rate and fly the affected flights late",
+      81
+     ],
+     [
+      "cancel",
+      "cancel",
+      "Cancel the Faro round trips in the weather window, then sequence the rest",
+      79
+     ]
+    ],
+    "knock_on": [
+     81,
+     80
+    ],
+    "rebooking": {
+     "cancel": [
+      655,
+      41,
+      614
+     ],
+     "delay": [
+      0,
+      0,
+      0
+     ]
+    },
+    "standby_crews": {
+     "cancel": [
+      "R1"
+     ],
+     "delay": [
+      "R1",
+      "R2"
+     ]
+    }
+   },
+   "sha256": {
+    "recovery_options": "9a3f0a05d2db25247d4aeb00012e0bd3799bb9a737bb769f3daacb877b7db221",
+    "knock_on": "8c6e4ae10ee1c0e3b1a70547f3d0d22aae47377697f848e5f562effce7a759b2",
+    "dispatch_advisories": "e5f6097422b0a29fd080610ad5b7c8a7b9d0c089279eace884d2562301daf109",
+    "cancel/impact/booking": "7006abebce54a6544c8289a6fac829347462401a1a5c7f1b7e26acacf9369315",
+    "cancel/impact/crew": "38d5e77182bca1784ccfffb92a7ae95f1940e85bd8f5605d131d66a678dcdf1c",
+    "cancel/impact/slots": "b697eb8cd7916451f3a089fe896b0554983d6fef335e9060509f5df6d5939169",
+    "cancel/rebooking_plan": "c2ebe19fccb1e90be235a7c6cc42d8575bc3191c390b0f55c55b17c055cc619f",
+    "cancel/standby_crews": "c0ba338fbcc47671b6ce63226abb4018d2e01c77a51174af48737e6fb81a4f04",
+    "cancel/duty_plan": "e284decba7e67dd2512e4e062b312d27e2108ced7abcc92591f40019062077ff",
+    "delay/impact/booking": "719a7f18fce6c012693efacf8777cf9b4e7b922ea61cc3ca2ac149ef52d074fb",
+    "delay/impact/crew": "b3ff0bd7d9d5723ed9d265b0aa20a10b34389c284013ea7d2a9afbbe3cd80dc4",
+    "delay/impact/slots": "fa03c45a461fa51c6da9d39a98451077441ecff8657eef806e1a01f908a67914",
+    "delay/rebooking_plan": "d1b88a3d56f6efb32fadaf0c85f1788cfd5920521ee9c122dca22874b7e9c349",
+    "delay/standby_crews": "23e2f8d3892351dc4b778ae6d152698a2f24ffb81752358bc6041c89010d6e52",
+    "delay/duty_plan": "5c793a9d531b4ceecd778a3224667608c810ec071b5a1d4ddae7ca1d45fec64e"
+   }
+  }
+ }
+}

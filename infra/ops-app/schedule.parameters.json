@@ -1,0 +1,28 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "system": {
+      "value": "schedule"
+    },
+    "allowedCallerOids": {
+      "value": [
+        "00000000-0000-4000-8000-000000000011",
+        "00000000-0000-4000-8000-000000000015",
+        "00000000-0000-4000-8000-000000000006"
+      ]
+    },
+    "allowedCallerClientIds": {
+      "value": [
+        "00000000-0000-4000-8000-000000000011",
+        "00000000-0000-4000-8000-000000000015",
+        "00000000-0000-4000-8000-000000000003"
+      ]
+    },
+    "writerOids": {
+      "value": [
+        "00000000-0000-4000-8000-000000000006"
+      ]
+    }
+  }
+}

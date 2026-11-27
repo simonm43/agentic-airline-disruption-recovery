@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>ARROW | Disruption recovery</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="ui.css">
+  <link rel="stylesheet" href="tower.css">
+  <link rel="stylesheet" href="map.css">
+  <script src="tips.js" defer></script>
+  <script src="land.js" defer></script>
+  <script src="map_draw.js" defer></script>
+  <script src="recovery_view.js" defer></script>
+  <script src="trail_view.js" defer></script>
+  <script src="chat_view.js" defer></script>
+  <script src="plan_view.js" defer></script>
+  <script src="tower_view.js" defer></script>
+  <script src="map_view.js" defer></script>
+  <script src="rules_view.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="top">
+      <a class="brand" href="/" aria-label="ARROW home">ARROW</a>
+      <nav class="tabs" role="tablist" aria-label="Views">
+        <button role="tab" id="tab-tower" aria-controls="tower" aria-selected="true" data-tab="tower">Control tower</button>
+        <button role="tab" id="tab-workspace" aria-controls="workspace" aria-selected="false" data-tab="workspace">Disruptions</button>
+        <button role="tab" id="tab-rules" aria-controls="rules" aria-selected="false" data-tab="rules">Rules<span id="rules-count" class="tab-count"></span></button>
+        <button role="tab" id="tab-map" aria-controls="map" aria-selected="false" data-tab="map">Map</button>
+      </nav>
+      <span class="spacer"></span>
+      <span class="env-badge" tabindex="0" data-tip-title="Development environment" data-tip="A generated operating day for a fictional Lisbon-hub airline. The airline systems ARROW reads and changes are sample versions; nothing reaches a real aircraft, crew, passenger, airport or air traffic control.">Development environment</span>
+      <button id="report-open" class="primary report-button" type="button" disabled aria-label="Report a disruption"><span aria-hidden="true">＋</span> Report</button>
+      <!-- The signed-in user as an avatar; name and role on hover or focus (prototype rev 2). -->
+      <span class="profile">
+        <span class="profile-avatar" id="user-initials" tabindex="0" data-tip-title="Signed-in user" data-tip="Checking session…">OCC</span>
+        <span class="profile-details"><strong id="user-name">Checking session…</strong><span id="user-role" class="user-role"></span></span>
+        <a class="sign-out" href="/.auth/logout" aria-label="Sign out" data-tip-title="Sign out" data-tip="Ends your ARROW session."><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M9 8l-4 4 4 4M5 12h10"/></svg></a>
+      </span>
+    </header>
+
+    <main>
+      <div id="notice" class="notice" role="alert" hidden></div>
+
+      <section id="tower" class="view" role="tabpanel" aria-labelledby="tab-tower">
+        <div class="tw"><p class="muted">Loading the operating day…</p></div>
+      </section>
+
+      <section id="workspace" class="view workspace" role="tabpanel" aria-labelledby="tab-workspace" hidden>
+        <aside class="rail" aria-labelledby="today-title">
+          <div class="rail-head">
+            <div><h1 id="today-title" tabindex="0" data-tip-title="Operating day" data-tip="Loading the operating day…">Today</h1></div>
+            <button id="refresh" class="icon-button" type="button" disabled aria-label="Refresh disruptions">↻</button>
+          </div>
+          <div id="cases" class="case-groups" aria-live="polite"><p class="muted">Loading disruptions…</p></div>
+        </aside>
+
+        <section id="case" class="case-pane" aria-label="Selected disruption">
+          <div id="case-empty" class="case-empty">
+            <h2>No disruption selected</h2>
+            <p>Choose one from Today or report a new one. System events open cases here automatically.</p>
+          </div>
+          <article id="case-view" hidden>
+            <button id="back" class="back" type="button">← Today</button>
+            <header class="case-head">
+              <!-- Icons with their names on hover or focus and in their accessible names (prototype rev 2). -->
+              <div class="case-tools">
+                <a id="case-trace" class="secondary case-tool icon-tool" target="_blank" rel="noopener" hidden tabindex="0" aria-label="End-to-end trace"
+                  data-tip-title="End-to-end trace ↗" data-tip="Opens this case in Application Insights: ARROW, the Foundry agents and the airline systems, every call under one trace."><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg></a>
+                <a id="case-foundry" class="secondary case-tool icon-tool" target="_blank" rel="noopener noreferrer" hidden aria-label="Open in Foundry"
+                  data-tip-title="Open in Foundry ↗" data-tip="Opens this case's orchestrator agent, at the version that handled it, in the Foundry portal."><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 20 7.5v9L12 21l-8-4.5v-9z"/><path d="M12 12 20 7.5M12 12v9M12 12 4 7.5"/></svg></a>
+                <button id="case-map" class="secondary case-tool icon-tool" type="button" aria-label="Show on map" data-tip-title="Show on map"
+                  data-tip="Opens the map on this case: its flights, aircraft and airports."><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6-5.3-6-10a6 6 0 1 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/></svg></button>
+                <button id="case-ask" class="primary case-tool icon-tool chat-toggle" type="button" aria-controls="chat" aria-expanded="false" aria-label="Ask about this case"
+                  data-tip-title="Ask about this case" data-tip="The Case Assistant answers from this case's record and can build what-if plans; OCC decides."><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v10H9l-5 4z"/></svg> <span id="case-ask-count" class="count" hidden></span></button>
+              </div>
+              <p id="case-meta" class="case-meta"></p>
+              <h2 id="case-title"></h2>
+              <div id="status-banner" class="banner" aria-live="polite"></div>
+            </header>
+            <!-- The case summary (owner-approved case summary prototype, rev 2): what happened, its impact, the
+                 one thing OCC must do and why this plan, not the next; it takes the status line's place while it shows. -->
+            <section id="summary" class="band" aria-label="Case summary" hidden></section>
+            <!-- What OCC must do, announced when it changes (the band above is redrawn). -->
+            <p id="summary-live" class="visually-hidden" aria-live="polite"></p>
+            <!-- The case as a journey: the steps act as tabs, and the chosen step's content follows them full width in the page.
+                 Today and the case summary never move; the plan cards open the Decision step. -->
+            <nav id="steps" class="steps" aria-label="Case journey"></nav>
+            <section id="drawer" class="step-panel" role="tabpanel" hidden>
+              <div id="drawer-body" class="dr-body">
+                <section id="step-reported" class="dr-step" data-panel="reported" hidden>
+                  <blockquote id="case-message" class="case-message"></blockquote>
+                  <ul id="case-repeats" class="case-repeats" hidden></ul>
+                  <dl id="case-facts" class="dr-kv"></dl>
+                </section>
+                <section id="step-assessed" class="dr-step" data-panel="assessed" hidden>
+                  <div id="trail-stats" class="tv-sum"></div>
+                  <div id="trail-graph" class="trail-graph" aria-label="Agents and decisions for this case"></div>
+                  <section id="trail-detail" class="tv-detail" aria-live="polite" aria-label="The selected step"></section>
+                  <details id="trail-convo" class="tv-convo"><summary>Conversation</summary><div id="trail-alt" class="hd"></div></details>
+                </section>
+                <section id="step-plans" class="dr-step" data-panel="plans" hidden></section>
+                <section id="step-rules" class="dr-step" data-panel="rules" hidden><div id="trail-checks" class="hd"></div></section>
+                <section id="step-decision" class="dr-step" data-panel="decision" hidden>
+                  <p id="rec-note" class="rec-note" hidden></p>
+                  <div id="plans" class="plans"></div>
+                  <section id="recommendation" class="rec" aria-labelledby="rec-title" hidden></section>
+                  <div id="decision-more"></div>
+                </section>
+                <section id="step-carried" class="dr-step" data-panel="carried" hidden>
+                  <section id="done" class="done" aria-labelledby="done-title" hidden></section>
+                  <p id="done-empty" class="muted"></p>
+                </section>
+              </div>
+            </section>
+          </article>
+        </section>
+
+        <!-- Ask about this case (case chat spec §5): docked on the right; a full-screen sheet on a phone. -->
+        <aside id="chat" class="chat" aria-labelledby="chat-title" hidden>
+          <div class="chat-head">
+            <div class="chat-row">
+              <h2 id="chat-title">Ask about this case</h2>
+              <button id="chat-close" class="icon-button" type="button" aria-label="Close">×</button>
+            </div>
+            <span id="chat-agent" class="chat-agent" tabindex="0" data-card="chat-agent-card">Case Assistant <span class="mk mk-ai">AI</span></span>
+            <p class="chat-kept">Kept on the case record</p>
+            <template id="chat-agent-card"><div class="tv-card">
+              <p class="tv-card-head"><span class="tv-badge"><b>L2</b> <span>Explains and proposes</span></span><span>Case Assistant Agent</span></p>
+              <p class="tv-what">An AI assistant: answers questions about this case from its record and the airline systems, asks the domain agents for live checks and can ask ARROW to build a what-if plan. Its answers are written by AI; OCC decides.</p>
+              <dl class="tv-kv">
+                <dt>Tools</dt><dd><span class="tv-tool"><b>ARROW</b> <code>read_case</code>, read only</span><span class="tv-tool"><b>ARROW</b> <code>what_if</code>, adds a plan that ARROW prices, checks and routes</span><span class="tv-tool"><b>ARROW</b> <code>get_playbook</code>, read only</span><span class="tv-tool"><b>Agents</b> the five domain agents, read only</span></dd>
+                <dt>Cannot</dt><dd>Approve, reject or carry out a plan, change rules or read other cases</dd>
+                <dt>Kept</dt><dd>Every question and answer, on the case record</dd>
+                <dt>Identity</dt><dd>Its own Entra agent identity</dd>
+                <dt>Model</dt><dd>GPT-4.1</dd>
+                <dt>Foundry</dt><dd><code>case-assistant-agent</code></dd>
+              </dl></div></template>
+          </div>
+          <div id="chat-log" class="chat-log" aria-live="polite"></div>
+          <div id="chat-suggest" class="chat-suggest" aria-label="Suggested questions"></div>
+          <form id="chat-form" class="chat-form" novalidate>
+            <input id="chat-input" name="question" type="text" maxlength="500" autocomplete="off" placeholder="Ask about this case…" aria-label="Your question">
+            <button id="chat-send" class="primary" type="submit">Ask</button>
+          </form>
+          <div id="chat-notice" class="notice" role="alert" hidden></div>
+          <p id="chat-limits" class="chat-limits"></p>
+        </aside>
+      </section>
+
+      <section id="rules" class="view" role="tabpanel" aria-labelledby="tab-rules" hidden>
+        <div class="rl"><p class="muted">Loading rules…</p></div>
+      </section>
+
+      <section id="map" class="view" role="tabpanel" aria-labelledby="tab-map" hidden></section>
+    </main>
+  </div>
+
+  <dialog id="report-dialog" aria-labelledby="report-title">
+    <form id="report-form" class="dialog-body" method="dialog">
+      <div class="dialog-head">
+        <h2 id="report-title">Report a disruption</h2>
+        <button id="report-close" class="icon-button" type="button" aria-label="Close">×</button>
+      </div>
+      <label for="report-text" class="field-label">What happened?</label>
+      <textarea id="report-text" name="text" rows="4" maxlength="2000" required
+        placeholder="For example: Border-control queues (Entry/Exit System checks) are holding passengers for AR259: it will leave about 20 minutes late."></textarea>
+      <p class="field-hint">Name the flight or aircraft and how long. The Disruption Detection Agent reads the message and records the disruption.</p>
+      <div class="examples" aria-label="Examples">
+        <span class="muted">Try:</span>
+        <button type="button" data-example="Border-control queues (Entry/Exit System checks) are holding passengers for AR259: it will leave about 20 minutes late.">AR259 +20 min</button>
+        <button type="button" data-example="Ground handling in Hamburg is short-staffed; AR444 is expected to depart 70 minutes late.">AR444 +70 min</button>
+        <button type="button" data-example="Hydraulic leak found on CS-TQA during the walk-around. Maintenance expects it out of service for about 4 hours.">CS-TQA defect 4 h</button>
+        <button type="button" data-example="Staff shortage at the gate: AR882 will be delayed by 75 minutes.">AR882 +75 min</button>
+        <button type="button" data-example="Late inbound aircraft: AR689 will leave 60 minutes late.">AR689 late inbound</button>
+      </div>
+      <div id="report-notice" class="notice" role="alert" hidden></div>
+      <div class="dialog-actions">
+        <button id="report-cancel" class="secondary" type="button">Cancel</button>
+        <button id="report-send" class="primary" type="submit">Send to ARROW</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="rule-dialog" aria-labelledby="rule-title">
+    <form id="rule-form" class="dialog-body" method="dialog" novalidate>
+      <div class="dialog-head">
+        <h2 id="rule-title">Propose a rule change</h2>
+        <button class="icon-button" type="button" data-close aria-label="Close">×</button>
+      </div>
+      <div class="rl-fields">
+        <label for="rule-cost" class="field-label">Cost limit for automatic plans <span class="muted">€</span></label>
+        <input id="rule-cost" name="cost_cap_eur" type="number" min="0" max="2000000000" step="1" inputmode="numeric" required>
+        <label for="rule-rebook" class="field-label">Rebooking limit <span class="muted">passengers</span></label>
+        <input id="rule-rebook" name="rebook_limit" type="number" min="0" max="2000000000" step="1" inputmode="numeric" required>
+      </div>
+      <label for="rule-reason" class="field-label">Reason</label>
+      <textarea id="rule-reason" name="reason" rows="3" minlength="3" maxlength="300" required></textarea>
+      <p class="field-hint">A second duty manager approves · applies to plans built after approval</p>
+      <div id="rule-notice" class="notice" role="alert" data-notice hidden></div>
+      <div class="dialog-actions">
+        <button class="secondary" type="button" data-close>Cancel</button>
+        <button id="rule-send" class="primary" type="submit">Propose</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="decision-dialog" aria-labelledby="decision-title">
+    <div class="dialog-body">
+      <h2 id="decision-title">Approve this plan?</h2>
+      <p id="decision-preview" class="muted"></p>
+      <ul id="decision-effects" class="effects"></ul>
+      <label for="decision-comment" class="field-label">Comment <span class="muted">optional</span></label>
+      <textarea id="decision-comment" rows="2" maxlength="300" placeholder="Why you decided"></textarea>
+      <p id="decision-effect" class="muted small"></p>
+      <div class="dialog-actions">
+        <button id="decision-cancel" class="secondary" type="button">Keep reviewing</button>
+        <button id="decision-confirm" class="primary" type="button">Approve</button>
+      </div>
+    </div>
+  </dialog>
+</body>
+</html>
