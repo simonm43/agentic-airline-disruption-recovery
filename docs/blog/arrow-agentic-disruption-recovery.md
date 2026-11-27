@@ -3,16 +3,8 @@
 When a disruption hits, an airline's Operations Control Centre (OCC) must re-plan aircraft, crews,
 slots and passengers together, and every minute costs money. AI agents can assess a disruption
 across every desk at once. The harder question is what they should be allowed to do. The Agentic
-Realtime Recovery Orchestration Workflow (ARROW), a reference implementation on Azure, answers with
-three rules.
-
-> **Agents read. Code acts. People decide.**
->
-> 1. **Agents only read.** They assess and propose; none can change an airline system.
-> 2. **Code checks and acts.** It applies every rule, prices every plan and carries out every
->    action.
-> 3. **People approve major decisions.** A duty manager approves anything above the limits, and
->    changing a limit takes two duty managers.
+Realtime Recovery Orchestration Workflow (ARROW), a reference implementation on Azure, explores
+that question.
 
 ## The business problem
 
@@ -22,9 +14,11 @@ Europe's 30 busiest airports [2].
 
 A minute of delay at the gate costs an airline about €45 while the delay stays under 30 minutes,
 and €166 averaged over all delays, knock-on included; passengers' rebooking, care, compensation and
-lost future bookings are the largest part [3]. Under Regulation (EC) No 261/2004 (EU261),
-passengers whose flight arrives three or more hours late or is cancelled at short notice can be
-owed €250 to €600 each, unless extraordinary circumstances caused it [4].
+lost future bookings are the largest part [3].
+
+Under Regulation (EC) No 261/2004 (EU261), passengers whose flight arrives three or more hours
+late or is cancelled at short notice can be owed €250 to €600 each, unless extraordinary
+circumstances caused it [4].
 
 ARROW's scenario is a Portuguese airline with a Lisbon hub and 900 flights a day. At 09:45 on its
 sample day, a hydraulic leak grounds the Airbus A320neo CS-TQA for four hours, and its next four
@@ -39,12 +33,13 @@ Approving it is the duty manager's call.
 
 ## How ARROW works
 
+A case starts with a report from the duty manager or an event from an airline system. Azure
+Service Bus queues the case for a recovery orchestrator in Microsoft Foundry Agent Service.
+
 ![Diagram of ARROW on Azure: three container apps, Service Bus, Azure SQL and seven Foundry agents, with the airline's systems outside.](../architecture/arrow-architecture.png)
 
 *Figure 2. ARROW on Azure; the airline's systems stay outside.*
 
-A duty manager's report, or an airline system's event, opens a case queued on Azure Service Bus.
-In Microsoft Foundry Agent Service, a recovery orchestrator then runs a bounded loop (Figure 3).
 The Disruption Detection agent records what the report says with a typed tool, and code checks
 every value. The Aircraft Recovery agent lists the options. The orchestrator takes them one at a
 time, delay first, asking the Crew, Passenger and, when departures move, Slot agents over the
@@ -55,13 +50,17 @@ the first plan that may run automatically, or after four.
 
 *Figure 3. Agents assess one option at a time; code builds and routes each plan.*
 
+> **Agents read. Code acts. People decide.** Agents assess and propose without changing airline
+> systems. Code checks, prices and carries out plans. Duty managers approve major decisions and
+> changes to limits.
+
 ## 1. Agents only read
 
 Each domain agent reads its own airline system through Model Context Protocol (MCP) tools, signed
 in with its own Microsoft Entra Agent ID that holds read roles only [5, 6]. No agent has a tool
 that changes an airline system. What agents hand back are typed findings and choices, such as an
 option's identifier or a yes or no; code rejects anything else. Agents see passenger counts and
-figures, never names or booking references, which supports data minimisation under the General
+figures, never names or booking references, which supports data minimization under the General
 Data Protection Regulation [7].
 
 ![Screenshot of AR259's agent graph in ARROW: five agents' findings, one priced plan, every rule passing, the plan carried out.](../presentation/screens/c1-graph.png)
@@ -137,8 +136,11 @@ support, not legal advice or a compliance claim.
 
 ## Get the code
 
-The three rules fit any operation where a wrong action is expensive. The repository [12] has the
-code, the architecture decisions and a guide that deploys ARROW into your own Azure subscription.
+The three rules (agents read, code acts, people decide) fit any operation where a wrong action is
+expensive.
+
+The repository [12] has the code, the architecture decisions and a guide that deploys ARROW into
+your own Azure subscription.
 
 ## References
 
