@@ -1,5 +1,7 @@
 # Agentic disruption recovery for airlines on Azure
 
+![Screenshot of ARROW's operations map: CS-TQA grounded at Lisbon, its next four flights retimed, and the plans to compare.](../presentation/screens/c3-map.png)
+
 When a disruption hits, an airline's Operations Control Centre (OCC) must re-plan aircraft, crews,
 slots and passengers together, and every minute costs money. AI agents can assess a disruption
 across every desk at once. The harder question is what they should be allowed to do. The Agentic
@@ -27,10 +29,6 @@ and 324 passengers lose a flight or connection. *Delay the rotation* costs €11
 ARROW recommends the delay: 247 fewer passengers lose a flight or connection, for €8,422 more.
 Approving it is the duty manager's call.
 
-![Screenshot of ARROW's operations map: CS-TQA grounded at Lisbon, its next four flights retimed, and the plans to compare.](../presentation/screens/c3-map.png)
-
-*Figure 1. CS-TQA's recommended plan on ARROW's map.*
-
 ## How ARROW works
 
 A case starts with a report from the duty manager or an event from an airline system. Azure
@@ -38,7 +36,7 @@ Service Bus queues the case for a recovery orchestrator in Microsoft Foundry Age
 
 ![Diagram of ARROW on Azure: three container apps, Service Bus, Azure SQL and seven Foundry agents, with the airline's systems outside.](../architecture/arrow-architecture.png)
 
-*Figure 2. ARROW on Azure; the airline's systems stay outside.*
+*Figure 1. ARROW on Azure; the airline's systems stay outside.*
 
 The Disruption Detection agent records what the report says with a typed tool, and code checks
 every value. The Aircraft Recovery agent lists the options. The orchestrator takes them one at a
@@ -48,7 +46,7 @@ the first plan that may run automatically, or after four.
 
 ![Diagram of the agent loop: agents assess each option, code builds and routes its plan, the OCC approves, one executor writes.](images/arrow-agent-loop.png)
 
-*Figure 3. Agents assess one option at a time; code builds and routes each plan.*
+*Figure 2. Agents assess one option at a time; code builds and routes each plan.*
 
 > **Agents read. Code acts. People decide.** Agents assess and propose without changing airline
 > systems. Code checks, prices and carries out plans. Duty managers approve major decisions and
@@ -65,7 +63,7 @@ Data Protection Regulation [7].
 
 ![Screenshot of AR259's agent graph in ARROW: five agents' findings, one priced plan, every rule passing, the plan carried out.](../presentation/screens/c1-graph.png)
 
-*Figure 4. AR259's 20-minute delay: five agents read and report; code builds, checks and carries out the plan.*
+*Figure 3. AR259's 20-minute delay: five agents read and report; code builds, checks and carries out the plan.*
 
 ## 2. Code checks and acts
 
@@ -93,19 +91,19 @@ Only a separate executor writes, and only for a plan that is automatic or approv
 goes through its recipient's own interface and returns a receipt; a system refuses a change whose
 data moved on since approval, and the case returns to the OCC. AR259's 20-minute delay (€356)
 stayed within every automatic limit, so it ran without the OCC, which was informed. In this
-development run, the orchestrator finished 59 seconds after the report (Figure 4) and the last
+development run, the orchestrator finished 59 seconds after the report (Figure 3) and the last
 receipt arrived at 68 seconds, all in one OpenTelemetry trace in Application Insights [8].
 Read-only agent identities, one write path and one trace per case also support incident
 reporting under the Network and Information Security Directive (NIS2) [9].
 
 ![Chart of AR259's trace: agent, tool and write spans on a 70-second timeline.](images/arrow-case-trace.png)
 
-*Figure 5. AR259 in one trace: 68 seconds from report to last receipt.*
+*Figure 4. AR259 in one trace: 68 seconds from report to last receipt.*
 
 ## 3. People approve major decisions
 
 CS-TQA's plans cross both automatic limits, so they wait for the duty manager, who sees them side
-by side: what each costs, who loses a flight and why ARROW recommends one (Figure 6). While
+by side: what each costs, who loses a flight and why ARROW recommends one (Figure 5). While
 deciding, the duty manager can ask the Case Assistant what happens if maintenance takes longer.
 Asked about two and three hours more, it had code build both plans like any other, and the rules
 block them: Lisbon's hourly capacity cannot take the moved flights, and three hours more also
@@ -115,7 +113,7 @@ European Union's AI Act [10].
 
 ![Screenshot of CS-TQA's decision step: two priced plans and two what-if plans that the rules block.](../presentation/screens/c3-plans.png)
 
-*Figure 6. CS-TQA's two plans and the two what-ifs the rules block, waiting for the duty manager.*
+*Figure 5. CS-TQA's two plans and the two what-ifs the rules block, waiting for the duty manager.*
 
 The limits belong to people too: one duty manager proposes a change, and a second must approve it.
 If the agents fail, the OCC still gets any plans already built, without a recommendation; with
